@@ -1,18 +1,22 @@
 package com.utn.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString
-@EqualsAndHashCode(callSuper = true)
 public class Producto extends Base {
 
     private String nombre;
-    private String descripcion;
-    private double precio;
+
+    private Double precio;
+
+    private Integer stock;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 }
