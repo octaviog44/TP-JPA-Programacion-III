@@ -1,32 +1,25 @@
 package com.utn.entities;
 
-import com.utn.enums.Estado;
-import com.utn.enums.FormaPago;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString
-@EqualsAndHashCode(callSuper = true)
-public class Pedido extends Base implements Calculable {
+public class Pedido extends Base {
 
+    private LocalDate fecha;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @OneToMany(mappedBy = "pedido",
+            cascade = CascadeType.ALL)
     private List<DetallePedido> detalles;
-    private Estado estado;
-    private FormaPago formaPago;
-
-    @Override
-    public double calcularTotal() {
-        double total = 0;
-
-        for (DetallePedido detalle : detalles) {
-            total += detalle.calcularSubtotal();
-        }
-
-        return total;
-    }
 }
