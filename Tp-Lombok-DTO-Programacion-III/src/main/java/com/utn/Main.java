@@ -1,40 +1,11 @@
-public static void main(String[] args) {
-
-    Categoria cat = Categoria.builder()
-            .id(1L)
-            .nombre("Hamburguesas")
-            .build();
-
-    Producto prod = Producto.builder()
-            .id(1L)
-            .nombre("Burger")
-            .descripcion("Doble carne")
-            .precio(2000)
-            .categoria(cat)
-            .build();
-
-    System.out.println(prod);
-}
-
-DetallePedido d1 = DetallePedido.builder()
-        .producto(prod1)
-        .cantidad(2)
-        .build();
-
-Pedido pedido = Pedido.builder()
-        .id(1L)
-        .detalles(List.of(d1))
-        .estado(Estado.PENDIENTE)
-        .formaPago(FormaPago.EFECTIVO)
-        .build();
-
-System.out.println(pedido.calcularTotal());
-
 package com.utn;
 
+import com.utn.config.JPAUtil;
 import com.utn.entities.*;
-import com.utn.enums.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,114 +13,219 @@ public class Main {
 
     public static void main(String[] args) {
 
-        
-        Categoria cat1 = Categoria.builder().id(1L).nombre("Hamburguesas").build();
-        Categoria cat2 = Categoria.builder().id(2L).nombre("Pizzas").build();
-        Categoria cat3 = Categoria.builder().id(3L).nombre("Bebidas").build();
+        EntityManager em = JPAUtil
+                .getEntityManagerFactory()
+                .createEntityManager();
 
-        
-        List<Producto> productos = new ArrayList<>();
+        EntityTransaction tx = em.getTransaction();
 
-        productos.add(Producto.builder().id(1L).nombre("Burger Simple").descripcion("Carne y pan").precio(2000).categoria(cat1).build());
-        productos.add(Producto.builder().id(2L).nombre("Burger Doble").descripcion("Doble carne").precio(3000).categoria(cat1).build());
-        productos.add(Producto.builder().id(3L).nombre("Burger Triple").descripcion("Triple carne").precio(4000).categoria(cat1).build());
+        try {
 
-        productos.add(Producto.builder().id(4L).nombre("Pizza Muzzarella").descripcion("Clásica").precio(3500).categoria(cat2).build());
-        productos.add(Producto.builder().id(5L).nombre("Pizza Especial").descripcion("Con todo").precio(4500).categoria(cat2).build());
-        productos.add(Producto.builder().id(6L).nombre("Pizza Napolitana").descripcion("Tomate y ajo").precio(4000).categoria(cat2).build());
+            tx.begin();
 
-        productos.add(Producto.builder().id(7L).nombre("Coca Cola").descripcion("500ml").precio(1500).categoria(cat3).build());
-        productos.add(Producto.builder().id(8L).nombre("Sprite").descripcion("500ml").precio(1500).categoria(cat3).build());
-        productos.add(Producto.builder().id(9L).nombre("Agua").descripcion("Sin gas").precio(1000).categoria(cat3).build());
-        productos.add(Producto.builder().id(10L).nombre("Jugo").descripcion("Naranja").precio(1200).categoria(cat3).build());
 
-       
-        DetallePedido d1 = DetallePedido.builder().producto(productos.get(0)).cantidad(2).build();
-        DetallePedido d2 = DetallePedido.builder().producto(productos.get(3)).cantidad(1).build();
+            // CATEGORIAS
+            Categoria bebidas = new Categoria();
+            bebidas.setNombre("Bebidas");
 
-        DetallePedido d3 = DetallePedido.builder().producto(productos.get(1)).cantidad(1).build();
-        DetallePedido d4 = DetallePedido.builder().producto(productos.get(6)).cantidad(3).build();
+            Categoria pizzas = new Categoria();
+            pizzas.setNombre("Pizzas");
 
-        DetallePedido d5 = DetallePedido.builder().producto(productos.get(2)).cantidad(1).build();
-        DetallePedido d6 = DetallePedido.builder().producto(productos.get(4)).cantidad(2).build();
+            Categoria hamburguesas = new Categoria();
+            hamburguesas.setNombre("Hamburguesas");
 
-        
-        Pedido p1 = Pedido.builder()
-                .id(1L)
-                .detalles(List.of(d1, d2))
-                .estado(Estado.PENDIENTE)
-                .formaPago(FormaPago.EFECTIVO)
-                .build();
+            em.persist(bebidas);
+            em.persist(pizzas);
+            em.persist(hamburguesas);
 
-        Pedido p2 = Pedido.builder()
-                .id(2L)
-                .detalles(List.of(d3, d4))
-                .estado(Estado.PAGADO)
-                .formaPago(FormaPago.TARJETA)
-                .build();
+            // PRODUCTOS
+            Producto p1 = new Producto();
+            p1.setNombre("Coca Cola");
+            p1.setPrecio(2500.0);
+            p1.setStock(20);
+            p1.setCategoria(bebidas);
 
-        Pedido p3 = Pedido.builder()
-                .id(3L)
-                .detalles(List.of(d5, d6))
-                .estado(Estado.ENVIADO)
-                .formaPago(FormaPago.EFECTIVO)
-                .build();
+            Producto p2 = new Producto();
+            p2.setNombre("Sprite");
+            p2.setPrecio(2300.0);
+            p2.setStock(15);
+            p2.setCategoria(bebidas);
 
-       
-        Usuario u1 = Usuario.builder()
-                .id(1L)
-                .nombre("Juan")
-                .email("juan@mail.com")
-                .password("1234")
-                .rol(Rol.CLIENTE)
-                .pedidos(List.of(p1, p2))
-                .build();
+            Producto p3 = new Producto();
+            p3.setNombre("Fanta");
+            p3.setPrecio(2200.0);
+            p3.setStock(10);
+            p3.setCategoria(bebidas);
 
-        Usuario u2 = Usuario.builder()
-                .id(2L)
-                .nombre("Ana")
-                .email("ana@mail.com")
-                .password("5678")
-                .rol(Rol.CLIENTE)
-                .pedidos(List.of(p3))
-                .build();
+            Producto p4 = new Producto();
+            p4.setNombre("Pizza Muzza");
+            p4.setPrecio(12000.0);
+            p4.setStock(8);
+            p4.setCategoria(pizzas);
 
-        List<Usuario> usuarios = List.of(u1, u2);
+            Producto p5 = new Producto();
+            p5.setNombre("Pizza Napolitana");
+            p5.setPrecio(14000.0);
+            p5.setStock(5);
+            p5.setCategoria(pizzas);
 
-        
-        System.out.println("=== UN PRODUCTO ===");
-        System.out.println(productos.get(0));
+            Producto p6 = new Producto();
+            p6.setNombre("Pizza Especial");
+            p6.setPrecio(16000.0);
+            p6.setStock(6);
+            p6.setCategoria(pizzas);
 
-        System.out.println("\n=== LISTA DE PRODUCTOS ===");
-        productos.forEach(System.out::println);
+            Producto p7 = new Producto();
+            p7.setNombre("Hamburguesa Simple");
+            p7.setPrecio(9000.0);
+            p7.setStock(10);
+            p7.setCategoria(hamburguesas);
 
-        
-        Usuario maxUsuario = usuarios.get(0);
+            Producto p8 = new Producto();
+            p8.setNombre("Hamburguesa Doble");
+            p8.setPrecio(12000.0);
+            p8.setStock(9);
+            p8.setCategoria(hamburguesas);
 
-        for (Usuario u : usuarios) {
-            if (u.getPedidos().size() > maxUsuario.getPedidos().size()) {
-                maxUsuario = u;
-            }
+            Producto p9 = new Producto();
+            p9.setNombre("Hamburguesa Triple");
+            p9.setPrecio(15000.0);
+            p9.setStock(7);
+            p9.setCategoria(hamburguesas);
+
+            Producto p10 = new Producto();
+            p10.setNombre("Agua");
+            p10.setPrecio(1800.0);
+            p10.setStock(25);
+            p10.setCategoria(bebidas);
+
+            em.persist(p1);
+            em.persist(p2);
+            em.persist(p3);
+            em.persist(p4);
+            em.persist(p5);
+            em.persist(p6);
+            em.persist(p7);
+            em.persist(p8);
+            em.persist(p9);
+            em.persist(p10);
+
+           
+            // USUARIOS
+            Usuario u1 = new Usuario();
+            u1.setNombre("Octavio");
+            u1.setEmail("octa@gmail.com");
+
+            Usuario u2 = new Usuario();
+            u2.setNombre("Jorge");
+            u2.setEmail("jorge@gmail.com");
+
+            em.persist(u1);
+            em.persist(u2);
+
+            
+            // PEDIDOS
+            Pedido pedido1 = new Pedido();
+            pedido1.setFecha(LocalDate.now());
+            pedido1.setUsuario(u1);
+
+            Pedido pedido2 = new Pedido();
+            pedido2.setFecha(LocalDate.now());
+            pedido2.setUsuario(u1);
+
+            Pedido pedido3 = new Pedido();
+            pedido3.setFecha(LocalDate.now());
+            pedido3.setUsuario(u2);
+
+            em.persist(pedido1);
+            em.persist(pedido2);
+            em.persist(pedido3);
+
+            // DETALLES
+            DetallePedido d1 = new DetallePedido();
+            d1.setCantidad(2);
+            d1.setPedido(pedido1);
+            d1.setProducto(p7);
+
+            DetallePedido d2 = new DetallePedido();
+            d2.setCantidad(1);
+            d2.setPedido(pedido1);
+            d2.setProducto(p1);
+
+            DetallePedido d3 = new DetallePedido();
+            d3.setCantidad(1);
+            d3.setPedido(pedido2);
+            d3.setProducto(p4);
+
+            DetallePedido d4 = new DetallePedido();
+            d4.setCantidad(2);
+            d4.setPedido(pedido2);
+            d4.setProducto(p2);
+
+            DetallePedido d5 = new DetallePedido();
+            d5.setCantidad(1);
+            d5.setPedido(pedido3);
+            d5.setProducto(p8);
+
+            DetallePedido d6 = new DetallePedido();
+            d6.setCantidad(3);
+            d6.setPedido(pedido3);
+            d6.setProducto(p10);
+
+            em.persist(d1);
+            em.persist(d2);
+            em.persist(d3);
+            em.persist(d4);
+            em.persist(d5);
+            em.persist(d6);
+
+  
+            // UPDATE
+            p1.setPrecio(3000.0);
+            p4.setStock(20);
+
+            em.merge(p1);
+            em.merge(p4);
+
+
+            // BUSCAR POR ID
+            Usuario usuarioBuscado = em.find(Usuario.class, 1L);
+
+            System.out.println("BUSQUEDA POR ID");
+            System.out.println(usuarioBuscado);
+
+            // BUSCAR POR MAIL
+            Usuario usuarioMail = em.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.email = :mail",
+                    Usuario.class
+            )
+                    .setParameter("mail", "octa@gmail.com")
+                    .getSingleResult();
+
+            System.out.println("BUSQUEDA POR MAIL");
+            System.out.println(usuarioMail);
+
+
+            // DELETE
+            Producto productoEliminar =
+                    em.find(Producto.class, p10.getId());
+
+            em.remove(productoEliminar);
+
+            tx.commit();
+
+            System.out.println("TODO FUNCIONO OK");
+
+        } catch (Exception e) {
+
+            tx.rollback();
+            e.printStackTrace();
+
+        } finally {
+
+            em.close();
+
         }
 
-        System.out.println("\n=== USUARIO CON MÁS PEDIDOS ===");
-        System.out.println(maxUsuario.getNombre());
-
-        System.out.println("\nPedidos de ese usuario:");
-        maxUsuario.getPedidos().forEach(System.out::println);
-
-       
-        Producto productoNuevo = Producto.builder()
-                .id(99L)
-                .nombre("Burger Simple")
-                .descripcion("Carne y pan")
-                .precio(2000)
-                .categoria(cat1)
-                .build();
-
-        System.out.println("\n=== PRUEBA EQUALS ===");
-        for (Producto p : productos) {
-            System.out.println("¿Es igual a " + p.getNombre() + "? " + productoNuevo.equals(p));
-        }
     }
 }
