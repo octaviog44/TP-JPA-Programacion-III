@@ -189,7 +189,7 @@ public class Main {
 
 
             // BUSCAR POR ID
-            Usuario usuarioBuscado = em.find(Usuario.class, 1L);
+            Usuario usuarioBuscado = em.find(Usuario.class, u1.getId());
 
             System.out.println("BUSQUEDA POR ID");
             System.out.println(usuarioBuscado);
@@ -206,26 +206,34 @@ public class Main {
             System.out.println(usuarioMail);
 
 
+            
             // DELETE
-            Producto productoEliminar =
-                    em.find(Producto.class, p10.getId());
 
-            em.remove(productoEliminar);
+Producto productoEliminar = new Producto();
 
-            tx.commit();
+productoEliminar.setNombre("Producto Temporal");
+productoEliminar.setPrecio(1000.0);
+productoEliminar.setStock(1);
+productoEliminar.setCategoria(bebidas);
 
-            System.out.println("TODO FUNCIONO OK");
+em.persist(productoEliminar);
 
-        } catch (Exception e) {
+// eliminar producto
+em.remove(productoEliminar);
 
-            tx.rollback();
-            e.printStackTrace();
+tx.commit();
 
-        } finally {
+System.out.println("TRANSACCION REALIZADA CON EXITO");
 
-            em.close();
+} catch (Exception e) {
 
-        }
+    tx.rollback();
+    e.printStackTrace();
 
+} finally {
+
+    em.close();
+
+}
     }
 }
