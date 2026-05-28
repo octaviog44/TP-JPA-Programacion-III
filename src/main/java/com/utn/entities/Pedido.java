@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Getter
@@ -19,7 +20,6 @@ public class Pedido extends Base {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "pedido",
-            cascade = CascadeType.ALL)
-    private List<DetallePedido> detalles;
+    @OneToMany(mappedBy = "pedido")
+    private Set<DetallePedido> detalles = new HashSet<>();
 }

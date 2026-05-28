@@ -3,7 +3,8 @@ package com.utn.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Getter
@@ -17,5 +18,5 @@ public class Usuario extends Base {
     private String email;
 
     @OneToMany(mappedBy = "usuario")
-    private List<Pedido> pedidos;
+    private Set<Pedido> pedidos = new HashSet<>();
 }

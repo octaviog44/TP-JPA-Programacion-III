@@ -195,15 +195,22 @@ public class Main {
             System.out.println(usuarioBuscado);
 
             // BUSCAR POR MAIL
-            Usuario usuarioMail = em.createQuery(
-                    "SELECT u FROM Usuario u WHERE u.email = :mail",
-                    Usuario.class
-            )
-                    .setParameter("mail", "octa@gmail.com")
-                    .getSingleResult();
+            try {
 
-            System.out.println("BUSQUEDA POR MAIL");
-            System.out.println(usuarioMail);
+                Usuario usuarioMail = em.createQuery(
+                "SELECT u FROM Usuario u WHERE u.email = :mail",
+              Usuario.class
+    )
+                            .setParameter("mail", "octa@gmail.com")
+                            .getSingleResult();
+
+                System.out.println("BUSQUEDA POR MAIL");
+                System.out.println(usuarioMail);
+
+            } catch (Exception e) {
+
+                System.out.println("No se encontró usuario con ese mail");
+}
 
 
             
